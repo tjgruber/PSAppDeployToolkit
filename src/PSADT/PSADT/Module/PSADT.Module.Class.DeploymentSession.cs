@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
 using System.Security.Principal;
@@ -623,7 +622,7 @@ namespace PSADT.Module
                             WriteLogEntry("Detected OOBE in progress, changing deployment mode to silent.");
                             _deployMode = "Silent";
                         }
-                        else if (Process.GetProcessesByName("WWAHost").Length > 0)
+                        else if (System.Diagnostics.Process.GetProcessesByName("WWAHost").Length > 0)
                         {
                             // If WWAHost is running, the device might be within the User ESP stage. But first, confirm whether the device is in Autopilot.
                             WriteLogEntry("The WWAHost process is running, confirming the device Autopilot-enrolled.");
@@ -881,7 +880,7 @@ namespace PSADT.Module
         public int Close()
         {
             // Abort if the caller isn't coming in via our module's Close-ADTSession function.
-            if (!(new StackFrame(1, false).GetMethod()!.Name.Equals(".ctor")) && !GetPowerShellCallStackFrameCommand(GetLogEntryCallerInternal()).Equals("Close-ADTSession"))
+            if (!(new System.Diagnostics.StackFrame(1, false).GetMethod()!.Name.Equals(".ctor")) && !GetPowerShellCallStackFrameCommand(GetLogEntryCallerInternal()).Equals("Close-ADTSession"))
             {
                 throw new InvalidOperationException("A deployment session can only be closed via the Close-ADTSession function.");
             }
@@ -1414,7 +1413,7 @@ namespace PSADT.Module
         /// <summary>
         /// Gets the current process ID.
         /// </summary>
-        private static readonly int PID = Process.GetCurrentProcess().Id;
+        private static readonly int PID = System.Diagnostics.Process.GetCurrentProcess().Id;
 
         /// <summary>
         /// Gets the session caller's username.
