@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Security;
@@ -542,6 +542,39 @@ namespace PSADT.PInvoke
         // HANDLE WINAPI GetCurrentProcess(void); https://msdn.microsoft.com/en-us/library/windows/desktop/ms683179(v=vs.85).aspx
         [DllImport("kernel32.dll", SetLastError = false, ExactSpelling = true)]
         public static extern SafeProcessHandle GetCurrentProcess();
+
+        /// <summary>Retrieves timing information for the specified process.</summary>
+        /// <param name="hProcess">
+        /// <para>
+        /// A handle to the process whose timing information is sought. The handle must have the <c>PROCESS_QUERY_INFORMATION</c> or
+        /// <c>PROCESS_QUERY_LIMITED_INFORMATION</c> access right. For more information, see Process Security and Access Rights.
+        /// </para>
+        /// <para><c>Windows Server 2003 and Windows XP:</c> The handle must have the <c>PROCESS_QUERY_INFORMATION</c> access right.</para>
+        /// </param>
+        /// <param name="lpCreationTime">A pointer to a <c>FILETIME</c> structure that receives the creation time of the process.</param>
+        /// <param name="lpExitTime">
+        /// A pointer to a <c>FILETIME</c> structure that receives the exit time of the process. If the process has not exited, the content of
+        /// this structure is undefined.
+        /// </param>
+        /// <param name="lpKernelTime">
+        /// A pointer to a <c>FILETIME</c> structure that receives the amount of time that the process has executed in kernel mode. The time that
+        /// each of the threads of the process has executed in kernel mode is determined, and then all of those times are summed together to
+        /// obtain this value.
+        /// </param>
+        /// <param name="lpUserTime">
+        /// A pointer to a <c>FILETIME</c> structure that receives the amount of time that the process has executed in user mode. The time that
+        /// each of the threads of the process has executed in user mode is determined, and then all of those times are summed together to obtain
+        /// this value. Note that this value can exceed the amount of real time elapsed (between lpCreationTime and lpExitTime) if the process
+        /// executes across multiple CPU cores.
+        /// </param>
+        /// <returns>
+        /// <para>If the function succeeds, the return value is nonzero.</para>
+        /// <para>If the function fails, the return value is zero. To get extended error information, call <c>GetLastError</c>.</para>
+        /// </returns>
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetProcessTimes([In] SafeProcessHandle hProcess, out FILETIME lpCreationTime, out FILETIME lpExitTime, out FILETIME lpKernelTime,
+            out FILETIME lpUserTime);
 
         /// <summary>Converts a file time to system time format. System time is based on Coordinated Universal Time (UTC).</summary>
     	/// <param name="lpFileTime">

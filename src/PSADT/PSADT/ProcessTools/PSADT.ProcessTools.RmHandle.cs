@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using PSADT.PInvoke;
 
-namespace PSADT.Process
+namespace PSADT.ProcessTools
 {
     /// <summary>
     /// Provides functionality to detect processes that have locks on files or directories using the Restart Manager API.
@@ -125,15 +125,22 @@ namespace PSADT.Process
                                 processInfos.AddOrUpdate(
                                     processId,
                                     // Add new
-                                    _ => CreateProcessInfo(processId, path, rmInfo),
+                                    _ => new ProcessHandleInfo(processId)
+                                    {
+                                        HandlePath = path,
+                                        Description = rmInfo.strAppName,
+                                        StartTimeUtc = rmInfo.Process.ProcessStartTimeUtc,
+                                        StartTimeLocal = rmInfo.Process.ProcessStartTimeLocal,
+                                        SessionId = (int)rmInfo.TSSessionId
+                                    },
                                     // Update existing
                                     (_, existing) =>
                                     {
-                                        if (!existing.LockedPath.Contains(path))
+                                        if (!existing.HandlePath.Contains(path))
                                         {
-                                            existing.LockedPath = string.Join(
+                                            existing.HandlePath = string.Join(
                                                 Environment.NewLine,
-                                                existing.LockedPath,
+                                                existing.HandlePath,
                                                 path
                                             ).Trim();
                                         }
@@ -155,50 +162,6 @@ namespace PSADT.Process
             }
         }
 
-        private static ProcessHandleInfo CreateProcessInfo(int processId, string lockedPath, RM_PROCESS_INFO rmInfo)
-        {
-            string workingDir = string.Empty;
-            string cmdLine = string.Empty;
-
-            try
-            {
-                workingDir = ProcessHelper.GetWorkingDirectory((uint)processId);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Failed to get working directory for PID {processId}: {ex.Message}");
-            }
-
-            try
-            {
-                cmdLine = ProcessHelper.GetCommandLine((uint)processId);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Failed to get command line for PID {processId}: {ex.Message}");
-            }
-
-            var info = new ProcessHandleInfo
-            {
-                Process = ProcessHelper.GetProcessExecutableName(processId),
-                ProcessId = processId,
-                ProcessDescription = rmInfo.strAppName,
-                Path = ProcessHelper.GetProcessFullyQualifiedPath(processId),
-                WorkingDirectory = workingDir,
-                CommandLine = cmdLine,
-                User = ProcessHelper.GetProcessOwner(processId),
-                ProcessStartTimeUtc = rmInfo.Process.ProcessStartTimeUtc,
-                ProcessStartTimeLocal = rmInfo.Process.ProcessStartTimeLocal,
-                LockedPath = lockedPath,
-                // Handle
-                // HandleType
-                // HandleFlags
-                // HandleAccessMask
-            };
-
-            return info;
-        }
-
         /// <summary>
         /// Gets a list of processes that have locks on the specified path.
         /// </summary>
@@ -209,7 +172,7 @@ namespace PSADT.Process
         {
             var options = new RmHandleOptions { Recursive = recursive };
             return GetLockingProcessInfo(path, options)
-                .Select(pi => System.Diagnostics.Process.GetProcessById(pi.ProcessId))
+                .Select(pi => System.Diagnostics.Process.GetProcessById(pi.Id))
                 .Where(p => p != null)
                 .ToList();
         }

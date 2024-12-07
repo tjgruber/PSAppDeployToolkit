@@ -1,4 +1,4 @@
-namespace PSADT.Process
+﻿namespace PSADT.ProcessTools
 {
     /// <summary>
     /// Options for controlling the behavior of GetLockingProcessesInfo.

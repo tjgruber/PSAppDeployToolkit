@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace PSADT.Process
+namespace PSADT.ProcessTools
 {
     /// <summary>
     /// Provides extension methods for the Process class.
@@ -13,12 +13,12 @@ namespace PSADT.Process
         /// <param name="process">The process to query.</param>
         /// <returns>The working directory path, or an empty string if it cannot be retrieved.</returns>
         /// <exception cref="ArgumentNullException">Thrown when process is null.</exception>
-        public static string GetWorkingDirectory(this System.Diagnostics.Process process)
+        public static string? GetWorkingDirectory(this System.Diagnostics.Process process)
         {
             if (process == null)
                 throw new ArgumentNullException(nameof(process));
 
-            return ProcessHelper.GetWorkingDirectory((uint)process.Id);
+            return ProcessHelper.GetWorkingDirectory(process.SafeHandle);
         }
 
         /// <summary>
@@ -27,12 +27,12 @@ namespace PSADT.Process
         /// <param name="process">The process to query.</param>
         /// <returns>The command line string, or an empty string if it cannot be retrieved.</returns>
         /// <exception cref="ArgumentNullException">Thrown when process is null.</exception>
-        public static string GetCommandLine(this System.Diagnostics.Process process)
+        public static string? GetCommandLine(this System.Diagnostics.Process process)
         {
             if (process == null)
                 throw new ArgumentNullException(nameof(process));
 
-            return ProcessHelper.GetCommandLine((uint)process.Id);
+            return ProcessHelper.GetCommandLine(process.SafeHandle);
         }
     }
 }
