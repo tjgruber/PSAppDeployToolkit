@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace PSADT.PInvoke
 {
@@ -2728,14 +2728,6 @@ namespace PSADT.PInvoke
     #endregion
 
     #region shared_pinvoke
-
-    public enum NTSTATUS : uint
-    {
-        /// <summary>
-        /// The operation completed successfully. 
-        /// </summary>
-        STATUS_SUCCESS = 0x00000000
-    }
 
     #endregion
 }

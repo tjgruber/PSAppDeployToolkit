@@ -29,7 +29,7 @@ namespace PSADT.OperatingSystem
         {
             OSVersionInfo = new OSVERSIONINFOEX { OSVersionInfoSize = Marshal.SizeOf(typeof(OSVERSIONINFOEX)) };
 
-            if (NativeMethods.RtlGetVersion(out OSVersionInfo) != NTSTATUS.STATUS_SUCCESS)
+            if (NativeMethods.RtlGetVersion(out OSVersionInfo) != NTStatus.STATUS_SUCCESS)
             {
                 return false;
             }

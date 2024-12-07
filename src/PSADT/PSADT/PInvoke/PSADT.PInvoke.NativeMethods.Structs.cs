@@ -1,5 +1,7 @@
-using System;
+﻿using System;
+using System.Security;
 using System.Globalization;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Win32.SafeHandles;
@@ -1698,6 +1700,420 @@ namespace PSADT.PInvoke
                                     (ulong)wMilliseconds & 0x3ff;
 
         private static bool IsLeapYear(ushort year) => year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    }
+
+    public partial struct NTStatus
+    {
+        internal readonly int _value;
+
+        private const int codeMask = 0xFFFF;
+        private const uint customerMask = 0x20000000;
+        private const int FACILITY_NT_BIT = 0x10000000;
+        private const uint facilityMask = 0x0FFF0000;
+        private const int facilityShift = 16;
+        private const uint severityMask = 0xC0000000;
+        private const int severityShift = 30;
+
+        /// <summary>Initializes a new instance of the <see cref="NTStatus"/> structure.</summary>
+        /// <param name="rawValue">The raw NTStatus value.</param>
+        public NTStatus(int rawValue) => _value = rawValue;
+
+        /// <summary>Initializes a new instance of the <see cref="NTStatus"/> structure.</summary>
+        /// <param name="rawValue">The raw NTStatus value.</param>
+        public NTStatus(uint rawValue) => _value = unchecked((int)rawValue);
+
+        /// <summary>Enumeration of facility codes</summary>
+        public enum FacilityCode : ushort
+        {
+            /// <summary>The default facility code.</summary>
+            FACILITY_NULL = 0,
+
+            /// <summary>The facility debugger</summary>
+            FACILITY_DEBUGGER = 0x1,
+
+            /// <summary>The facility RPC runtime</summary>
+            FACILITY_RPC_RUNTIME = 0x2,
+
+            /// <summary>The facility RPC stubs</summary>
+            FACILITY_RPC_STUBS = 0x3,
+
+            /// <summary>The facility io error code</summary>
+            FACILITY_IO_ERROR_CODE = 0x4,
+
+            /// <summary>The facility codclass error code</summary>
+            FACILITY_CODCLASS_ERROR_CODE = 0x6,
+
+            /// <summary>The facility ntwi N32</summary>
+            FACILITY_NTWIN32 = 0x7,
+
+            /// <summary>The facility ntcert</summary>
+            FACILITY_NTCERT = 0x8,
+
+            /// <summary>The facility ntsspi</summary>
+            FACILITY_NTSSPI = 0x9,
+
+            /// <summary>The facility terminal server</summary>
+            FACILITY_TERMINAL_SERVER = 0xA,
+
+            /// <summary>The faciltiy MUI error code</summary>
+            FACILTIY_MUI_ERROR_CODE = 0xB,
+
+            /// <summary>The facility usb error code</summary>
+            FACILITY_USB_ERROR_CODE = 0x10,
+
+            /// <summary>The facility hid error code</summary>
+            FACILITY_HID_ERROR_CODE = 0x11,
+
+            /// <summary>The facility firewire error code</summary>
+            FACILITY_FIREWIRE_ERROR_CODE = 0x12,
+
+            /// <summary>The facility cluster error code</summary>
+            FACILITY_CLUSTER_ERROR_CODE = 0x13,
+
+            /// <summary>The facility acpi error code</summary>
+            FACILITY_ACPI_ERROR_CODE = 0x14,
+
+            /// <summary>The facility SXS error code</summary>
+            FACILITY_SXS_ERROR_CODE = 0x15,
+
+            /// <summary>The facility transaction</summary>
+            FACILITY_TRANSACTION = 0x19,
+
+            /// <summary>The facility commonlog</summary>
+            FACILITY_COMMONLOG = 0x1A,
+
+            /// <summary>The facility video</summary>
+            FACILITY_VIDEO = 0x1B,
+
+            /// <summary>The facility filter manager</summary>
+            FACILITY_FILTER_MANAGER = 0x1C,
+
+            /// <summary>The facility monitor</summary>
+            FACILITY_MONITOR = 0x1D,
+
+            /// <summary>The facility graphics kernel</summary>
+            FACILITY_GRAPHICS_KERNEL = 0x1E,
+
+            /// <summary>The facility driver framework</summary>
+            FACILITY_DRIVER_FRAMEWORK = 0x20,
+
+            /// <summary>The facility fve error code</summary>
+            FACILITY_FVE_ERROR_CODE = 0x21,
+
+            /// <summary>The facility FWP error code</summary>
+            FACILITY_FWP_ERROR_CODE = 0x22,
+
+            /// <summary>The facility ndis error code</summary>
+            FACILITY_NDIS_ERROR_CODE = 0x23,
+
+            /// <summary>The facility TPM</summary>
+            FACILITY_TPM = 0x29,
+
+            /// <summary>The facility RTPM</summary>
+            FACILITY_RTPM = 0x2A,
+
+            /// <summary>The facility hypervisor</summary>
+            FACILITY_HYPERVISOR = 0x35,
+
+            /// <summary>The facility ipsec</summary>
+            FACILITY_IPSEC = 0x36,
+
+            /// <summary>The facility virtualization</summary>
+            FACILITY_VIRTUALIZATION = 0x37,
+
+            /// <summary>The facility volmgr</summary>
+            FACILITY_VOLMGR = 0x38,
+
+            /// <summary>The facility BCD error code</summary>
+            FACILITY_BCD_ERROR_CODE = 0x39,
+
+            /// <summary>The facility wi N32 k ntuser</summary>
+            FACILITY_WIN32K_NTUSER = 0x3E,
+
+            /// <summary>The facility wi N32 k ntgdi</summary>
+            FACILITY_WIN32K_NTGDI = 0x3F,
+
+            /// <summary>The facility resume key filter</summary>
+            FACILITY_RESUME_KEY_FILTER = 0x40,
+
+            /// <summary>The facility RDBSS</summary>
+            FACILITY_RDBSS = 0x41,
+
+            /// <summary>The facility BTH att</summary>
+            FACILITY_BTH_ATT = 0x42,
+
+            /// <summary>The facility secureboot</summary>
+            FACILITY_SECUREBOOT = 0x43,
+
+            /// <summary>The facility audio kernel</summary>
+            FACILITY_AUDIO_KERNEL = 0x44,
+
+            /// <summary>The facility VSM</summary>
+            FACILITY_VSM = 0x45,
+
+            /// <summary>The facility volsnap</summary>
+            FACILITY_VOLSNAP = 0x50,
+
+            /// <summary>The facility sdbus</summary>
+            FACILITY_SDBUS = 0x51,
+
+            /// <summary>The facility shared VHDX</summary>
+            FACILITY_SHARED_VHDX = 0x5C,
+
+            /// <summary>The facility SMB</summary>
+            FACILITY_SMB = 0x5D,
+
+            /// <summary>The facility interix</summary>
+            FACILITY_INTERIX = 0x99,
+
+            /// <summary>The facility spaces</summary>
+            FACILITY_SPACES = 0xE7,
+
+            /// <summary>The facility security core</summary>
+            FACILITY_SECURITY_CORE = 0xE8,
+
+            /// <summary>The facility system integrity</summary>
+            FACILITY_SYSTEM_INTEGRITY = 0xE9,
+
+            /// <summary>The facility licensing</summary>
+            FACILITY_LICENSING = 0xEA,
+
+            /// <summary>The facility platform manifest</summary>
+            FACILITY_PLATFORM_MANIFEST = 0xEB,
+
+            /// <summary>The facility maximum value</summary>
+            FACILITY_MAXIMUM_VALUE = 0xEC
+        }
+
+        /// <summary>A value indicating the severity of an <see cref="NTStatus"/> value (bits 30-31).</summary>
+        public enum SeverityLevel : byte
+        {
+            /// <summary>
+            /// Indicates a successful NTSTATUS value, such as STATUS_SUCCESS, or the value IO_ERR_RETRY_SUCCEEDED in error log packets.
+            /// </summary>
+            STATUS_SEVERITY_SUCCESS = 0x0,
+
+            /// <summary>Indicates an informational NTSTATUS value, such as STATUS_SERIAL_MORE_WRITES.</summary>
+            STATUS_SEVERITY_INFORMATIONAL = 0x1,
+
+            /// <summary>Indicates a warning NTSTATUS value, such as STATUS_DEVICE_PAPER_EMPTY.</summary>
+            STATUS_SEVERITY_WARNING = 0x2,
+
+            /// <summary>
+            /// Indicates an error NTSTATUS value, such as STATUS_INSUFFICIENT_RESOURCES for a FinalStatus value or
+            /// IO_ERR_CONFIGURATION_ERROR for an ErrorCode value in error log packets.
+            /// </summary>
+            STATUS_SEVERITY_ERROR = 0x3
+        }
+
+        /// <summary>Gets the code portion of the <see cref="NTStatus"/>.</summary>
+        /// <value>The code value (bits 0-15).</value>
+        public ushort Code => GetCode(_value);
+
+        /// <summary>Gets a value indicating whether this code is customer defined (true) or from Microsoft (false).</summary>
+        /// <value><c>true</c> if customer defined; otherwise, <c>false</c>.</value>
+        public bool CustomerDefined => IsCustomerDefined(_value);
+
+        /// <summary>Gets the facility portion of the <see cref="NTStatus"/>.</summary>
+        /// <value>The facility value (bits 16-26).</value>
+        public FacilityCode Facility => GetFacility(_value);
+
+        /// <summary>Gets a value indicating whether this <see cref="NTStatus"/> is a failure (Severity bit 31 equals 1).</summary>
+        /// <value><c>true</c> if failed; otherwise, <c>false</c>.</value>
+        public bool Failed => Severity == SeverityLevel.STATUS_SEVERITY_ERROR;
+
+        /// <summary>Gets the severity level of the <see cref="NTStatus"/>.</summary>
+        /// <value>The severity level.</value>
+        public SeverityLevel Severity => GetSeverity(_value);
+
+        /// <summary>Gets a value indicating whether this <see cref="NTStatus"/> is a success (Severity bit 31 equals 0).</summary>
+        /// <value><c>true</c> if succeeded; otherwise, <c>false</c>.</value>
+        public bool Succeeded => !Failed;
+
+        /// <summary>Gets the code value from a 32-bit value.</summary>
+        /// <param name="ntstatus">The 32-bit raw NTStatus value.</param>
+        /// <returns>The code value (bits 0-15).</returns>
+        public static ushort GetCode(int ntstatus) => (ushort)(ntstatus & codeMask);
+
+        /// <summary>Gets the facility value from a 32-bit value.</summary>
+        /// <param name="ntstatus">The 32-bit raw NTStatus value.</param>
+        /// <returns>The facility value (bits 16-26).</returns>
+        public static FacilityCode GetFacility(int ntstatus) => (FacilityCode)((ntstatus & facilityMask) >> facilityShift);
+
+        /// <summary>Gets the severity value from a 32-bit value.</summary>
+        /// <param name="ntstatus">The 32-bit raw NTStatus value.</param>
+        /// <returns>The severity value (bit 31).</returns>
+        public static SeverityLevel GetSeverity(int ntstatus) => (SeverityLevel)((ntstatus & severityMask) >> severityShift);
+
+        /// <summary>Gets the customer defined bit from a 32-bit value.</summary>
+        /// <param name="ntstatus">The 32-bit raw NTStatus value.</param>
+        /// <returns><c>true</c> if the customer defined bit is set; otherwise, <c>false</c>.</returns>
+        public static bool IsCustomerDefined(int ntstatus) => (ntstatus & customerMask) > 0;
+
+        /// <summary>Performs an explicit conversion from <see cref="NTStatus"/> to <see cref="System.Int32"/>.</summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator int(NTStatus value) => value._value;
+
+        /// <summary>Performs an explicit conversion from <see cref="NTStatus"/> to <see cref="System.UInt32"/>.</summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator uint(NTStatus value) => unchecked((uint)value._value);
+
+        /// <summary>Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="NTStatus"/>.</summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator NTStatus(int value) => new(value);
+
+        /// <summary>Performs an implicit conversion from <see cref="System.UInt32"/> to <see cref="NTStatus"/>.</summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator NTStatus(uint value) => new(value);
+
+        /// <summary>Implements the operator !=.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="NTStatus"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(NTStatus hrLeft, NTStatus hrRight) => !(hrLeft == hrRight);
+
+        /// <summary>Implements the operator !=.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="int"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(NTStatus hrLeft, int hrRight) => !(hrLeft == hrRight);
+
+        /// <summary>Implements the operator !=.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="uint"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(NTStatus hrLeft, uint hrRight) => !(hrLeft == hrRight);
+
+        /// <summary>Implements the operator ==.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="NTStatus"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(NTStatus hrLeft, NTStatus hrRight) => hrLeft.Equals(hrRight);
+
+        /// <summary>Implements the operator ==.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="int"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(NTStatus hrLeft, int hrRight) => hrLeft.Equals(hrRight);
+
+        /// <summary>Implements the operator ==.</summary>
+        /// <param name="hrLeft">The first <see cref="NTStatus"/>.</param>
+        /// <param name="hrRight">The second <see cref="uint"/>.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(NTStatus hrLeft, uint hrRight) => hrLeft.Equals(hrRight);
+
+        /// <summary>Indicates whether the current object is equal to an <see cref="int"/>.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.</returns>
+        public bool Equals(int other) => other == _value;
+
+        /// <summary>Indicates whether the current object is equal to an <see cref="uint"/>.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.</returns>
+        public bool Equals(uint other) => unchecked((int)other) == _value;
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.</returns>
+        public bool Equals(NTStatus other) => other._value == _value;
+
+        /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="obj"/> parameter; otherwise, false.</returns>
+        public override bool Equals(object? obj)
+        {
+            if (obj is NTStatus status)
+            {
+                return Equals(status);
+            }
+            return false;
+        }
+
+        /// <summary>Returns a hash code for this instance.</summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode() => _value;
+
+        /// <summary>Converts the specified NTSTATUS code to its equivalent system error code.</summary>
+        /// <param name="status">The NTSTATUS code to be converted.</param>
+        /// <returns>
+        /// The function returns the corresponding system error code. ERROR_MR_MID_NOT_FOUND is returned when the specified NTSTATUS code
+        /// does not have a corresponding system error code.
+        /// </returns>
+        [DllImport("ntdll.dll", ExactSpelling = true)]
+        public static extern uint RtlNtStatusToDosError(int status);
+
+        /// <summary>
+        /// If the supplied raw NTStatus value represents a failure, throw the associated <see cref="Exception"/> with the optionally
+        /// supplied message.
+        /// </summary>
+        /// <param name="ntstatus">The 32-bit raw NTStatus value.</param>
+        /// <param name="message">The optional message to assign to the <see cref="Exception"/>.</param>
+        [System.Diagnostics.DebuggerStepThrough, System.Diagnostics.DebuggerHidden]
+        public static void ThrowIfFailed(int ntstatus, string? message = null) => new NTStatus(ntstatus).ThrowIfFailed(message);
+
+        /// <summary>
+        /// If this <see cref="NTStatus"/> represents a failure, throw the associated <see cref="Exception"/> with the optionally supplied message.
+        /// </summary>
+        /// <param name="message">The optional message to assign to the <see cref="Exception"/>.</param>
+        [SecurityCritical, SecuritySafeCritical]
+        [System.Diagnostics.DebuggerStepThrough, System.Diagnostics.DebuggerHidden]
+        public void ThrowIfFailed(string? message = null)
+        {
+            var exception = GetException(message);
+            if (exception != null)
+                throw exception;
+        }
+
+        /// <summary>Gets the .NET <see cref="Exception"/> associated with the NTStatus value and optionally adds the supplied message.</summary>
+        /// <param name="message">The optional message to assign to the <see cref="Exception"/>.</param>
+        /// <returns>The associated <see cref="Exception"/> or <c>null</c> if this NTStatus is not a failure.</returns>
+        [SecurityCritical, SecuritySafeCritical]
+        public Exception? GetException(string? message = null)
+        {
+            if (!Failed) return null;
+
+            int hResult = ToHRESULT();
+
+            var exceptionForHR = Marshal.GetExceptionForHR(hResult, new IntPtr(-1));
+            if (exceptionForHR is null) return null;
+            if (exceptionForHR.GetType() == typeof(COMException))
+            {
+                return Facility == FacilityCode.FACILITY_NTWIN32
+                    ? string.IsNullOrEmpty(message) ? new Win32Exception(Code) : new Win32Exception(Code, message)
+                    : new COMException(message ?? exceptionForHR.Message, hResult);
+            }
+            if (!string.IsNullOrEmpty(message))
+            {
+                var constructor = exceptionForHR.GetType().GetConstructor(new Type[] { typeof(string) })!;
+                exceptionForHR = constructor.Invoke(new object[] { message! }) as Exception;
+            }
+            return exceptionForHR;
+        }
+
+        /// <summary>The system cannot find message text for message number 0x%1 in the message file for %2.</summary>
+        private const uint ERROR_MR_MID_NOT_FOUND = 0x0000013D;
+
+        /// <summary>Converts this error to an HRESULT.</summary>
+        /// <returns>An equivalent HRESULT.</returns>
+        public int ToHRESULT()
+        {
+            uint werr = RtlNtStatusToDosError(_value);
+            return werr != ERROR_MR_MID_NOT_FOUND ? (int)werr : HRESULT_FROM_NT(_value);
+        }
+
+        [ExcludeFromCodeCoverage]
+        private static int HRESULT_FROM_NT(int ntStatus) => ntStatus | FACILITY_NT_BIT;
+
+
+        /// <summary>The operation completed successfully.</summary>
+        public const int STATUS_SUCCESS = 0x00000000;
+
+        /// <summary>The specified information record length does not match the length that is required for the specified information class.</summary>
+        public const int STATUS_INFO_LENGTH_MISMATCH = unchecked((int)0xC0000004);
     }
 
     #endregion

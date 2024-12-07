@@ -1412,7 +1412,7 @@ namespace PSADT.PInvoke
         #region PInvoke: ntdll.dll
 
         [DllImport("ntdll.dll", SetLastError = false, CharSet = CharSet.Unicode)]
-        public static extern NTSTATUS RtlGetVersion(out OSVERSIONINFOEX versionInfo);
+        public static extern NTStatus RtlGetVersion(out OSVERSIONINFOEX versionInfo);
 
         [DllImport("ntdll.dll", SetLastError = false, ExactSpelling = true)]
         public static extern int NtQueryInformationProcess(
