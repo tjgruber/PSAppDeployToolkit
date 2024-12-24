@@ -92,7 +92,7 @@ function Set-ADTActiveSetup
         https://psappdeploytoolkit.com
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Create')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Create')]
     param
     (
         [Parameter(Mandatory = $true, ParameterSetName = 'Create')]
@@ -199,7 +199,7 @@ function Set-ADTActiveSetup
         # Define internal function to test current ActiveSetup stuff.
         function Test-ADTActiveSetup
         {
-            [CmdletBinding()]
+            [CmdletBinding(SupportsShouldProcess = $true)]
             [OutputType([System.Boolean])]
             param
             (
@@ -349,7 +349,7 @@ function Set-ADTActiveSetup
         function Set-ADTActiveSetupRegistryEntry
         {
             [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'This is an internal worker function that requires no end user confirmation.')]
-            [CmdletBinding()]
+            [CmdletBinding(SupportsShouldProcess = $true)]
             param
             (
                 [Parameter(Mandatory = $true)]

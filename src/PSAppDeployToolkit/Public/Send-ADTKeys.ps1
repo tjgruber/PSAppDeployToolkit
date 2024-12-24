@@ -71,7 +71,7 @@ function Send-ADTKeys
     #>
 
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = "This function is appropriately named and we don't need PSScriptAnalyzer telling us otherwise.")]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param
     (
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'WindowTitle')]
@@ -107,7 +107,7 @@ function Send-ADTKeys
         # Internal worker filter.
         filter Send-ADTKeysToWindow
         {
-            [CmdletBinding()]
+            [CmdletBinding(SupportsShouldProcess = $true)]
             param
             (
                 [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
