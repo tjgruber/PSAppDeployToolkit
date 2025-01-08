@@ -35,6 +35,12 @@ try
                 ModuleImport = $null
                 ModuleInit = $null
             }
+            Async = [pscustomobject]@{
+                ScriptSection = 'Asynchronous'
+                LogFileDirectory = $null
+                LogFileName = $null
+                LogStyle = $null
+            }
             Sessions = [System.Collections.Generic.List[PSADT.Module.DeploymentSession]]::new()
             SessionState = $ExecutionContext.SessionState
             TerminalServerMode = $false
